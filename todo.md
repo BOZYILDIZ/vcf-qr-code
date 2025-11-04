@@ -27,3 +27,8 @@
 - [x] Créer une interface responsive (mobile, tablette, desktop)
 - [x] Ajouter des validations de formulaire appropriées
 - [x] Implémenter des messages de feedback utilisateur (succès, erreurs)
+
+## Déploiement
+
+- [x] Créer le fichier de configuration vercel.json
+- [x] Ajouter les instructions de déploiement dans le README
