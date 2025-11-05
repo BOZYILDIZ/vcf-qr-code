@@ -42,3 +42,10 @@
 - [x] Ajouter un sélecteur de couleur pour le QR code
 - [x] Ajouter un sélecteur de couleur pour le fond du QR code
 - [x] Ajouter une option pour rendre le fond transparent
+
+## Restructuration Vercel
+
+- [x] Simplifier la structure du projet (supprimer le dossier server inutile)
+- [x] Adapter le script de build pour Vercel
+- [x] Corriger le fichier index.html pour supprimer les variables d'environnement inutiles
+- [x] Mettre à jour vercel.json avec la bonne configuration
