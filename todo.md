@@ -36,3 +36,9 @@
 ## Bugs
 
 - [x] Corriger l'erreur de déploiement Vercel (outputDirectory incorrect)
+
+## Nouvelles fonctionnalités
+
+- [x] Ajouter un sélecteur de couleur pour le QR code
+- [x] Ajouter un sélecteur de couleur pour le fond du QR code
+- [x] Ajouter une option pour rendre le fond transparent

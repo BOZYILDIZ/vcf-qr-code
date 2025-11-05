@@ -26,6 +26,9 @@ export default function Home() {
   const [vcfContent, setVcfContent] = useState<string>("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("form");
+  const [qrColor, setQrColor] = useState<string>("#000000");
+  const [qrBgColor, setQrBgColor] = useState<string>("#FFFFFF");
+  const [transparentBg, setTransparentBg] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleInputChange = (field: keyof VCardData, value: string) => {
@@ -67,8 +70,8 @@ export default function Home() {
         width: 400,
         margin: 2,
         color: {
-          dark: "#000000",
-          light: "#FFFFFF",
+          dark: qrColor,
+          light: transparentBg ? "#00000000" : qrBgColor,
         },
       });
       setQrCodeUrl(url);
@@ -267,6 +270,65 @@ export default function Home() {
                     </div>
                   ) : (
                     <>
+                      <div className="space-y-6 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="qrColor">Couleur du QR Code</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="qrColor"
+                                type="color"
+                                value={qrColor}
+                                onChange={(e) => setQrColor(e.target.value)}
+                                className="w-20 h-10 cursor-pointer"
+                              />
+                              <Input
+                                type="text"
+                                value={qrColor}
+                                onChange={(e) => setQrColor(e.target.value)}
+                                placeholder="#000000"
+                                className="flex-1"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="qrBgColor">Couleur du fond</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="qrBgColor"
+                                type="color"
+                                value={qrBgColor}
+                                onChange={(e) => setQrBgColor(e.target.value)}
+                                className="w-20 h-10 cursor-pointer"
+                                disabled={transparentBg}
+                              />
+                              <Input
+                                type="text"
+                                value={qrBgColor}
+                                onChange={(e) => setQrBgColor(e.target.value)}
+                                placeholder="#FFFFFF"
+                                className="flex-1"
+                                disabled={transparentBg}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="transparentBg"
+                            checked={transparentBg}
+                            onChange={(e) => setTransparentBg(e.target.checked)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                          <Label htmlFor="transparentBg" className="cursor-pointer">
+                            Fond transparent
+                          </Label>
+                        </div>
+                      </div>
+
                       <div className="flex flex-col items-center gap-6">
                         {qrCodeUrl ? (
                           <div className="bg-white p-6 rounded-lg shadow-lg border-2 border-primary/20">
