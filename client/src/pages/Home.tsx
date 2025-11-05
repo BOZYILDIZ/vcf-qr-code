@@ -29,6 +29,11 @@ export default function Home() {
   const [qrColor, setQrColor] = useState<string>("#000000");
   const [qrBgColor, setQrBgColor] = useState<string>("#FFFFFF");
   const [transparentBg, setTransparentBg] = useState<boolean>(false);
+  
+  // États pour QR code depuis URL
+  const [urlInput, setUrlInput] = useState<string>("");
+  const [urlQrCodeUrl, setUrlQrCodeUrl] = useState<string>("");
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleInputChange = (field: keyof VCardData, value: string) => {
@@ -96,6 +101,49 @@ export default function Home() {
     toast.success("QR Code téléchargé!");
   };
 
+  const handleGenerateUrlQR = async () => {
+    if (!urlInput) {
+      toast.error("Veuillez entrer une URL");
+      return;
+    }
+
+    // Validation simple de l'URL
+    try {
+      new URL(urlInput);
+    } catch {
+      toast.error("Veuillez entrer une URL valide (ex: https://exemple.fr)");
+      return;
+    }
+
+    try {
+      const url = await QRCode.toDataURL(urlInput, {
+        width: 400,
+        margin: 2,
+        color: {
+          dark: qrColor,
+          light: transparentBg ? "#00000000" : qrBgColor,
+        },
+      });
+      setUrlQrCodeUrl(url);
+      toast.success("QR Code généré avec succès!");
+    } catch (error) {
+      toast.error("Erreur lors de la génération du QR Code");
+      console.error(error);
+    }
+  };
+
+  const handleDownloadUrlQR = () => {
+    if (!urlQrCodeUrl) {
+      toast.error("Veuillez d'abord générer un QR Code");
+      return;
+    }
+    const link = document.createElement("a");
+    link.href = urlQrCodeUrl;
+    link.download = "url_qrcode.png";
+    link.click();
+    toast.success("QR Code téléchargé!");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="container py-8 md:py-12">
@@ -113,14 +161,18 @@ export default function Home() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="form" className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Formulaire VCF
               </TabsTrigger>
               <TabsTrigger value="qrcode" className="flex items-center gap-2">
                 <QrCode className="w-4 h-4" />
-                QR Code
+                QR Code VCF
+              </TabsTrigger>
+              <TabsTrigger value="url" className="flex items-center gap-2">
+                <QrCode className="w-4 h-4" />
+                QR Code URL
               </TabsTrigger>
             </TabsList>
 
@@ -375,6 +427,141 @@ export default function Home() {
                         </div>
                       )}
                     </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="url">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Générateur de QR Code depuis URL</CardTitle>
+                  <CardDescription>
+                    Entrez une URL pour générer un QR code scannable
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="urlInput">URL du site web</Label>
+                      <Input
+                        id="urlInput"
+                        type="url"
+                        placeholder="https://www.exemple.fr"
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleGenerateUrlQR();
+                          }
+                        }}
+                      />
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="qrColorUrl">Couleur du QR Code</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="qrColorUrl"
+                              type="color"
+                              value={qrColor}
+                              onChange={(e) => setQrColor(e.target.value)}
+                              className="w-20 h-10 cursor-pointer"
+                            />
+                            <Input
+                              type="text"
+                              value={qrColor}
+                              onChange={(e) => setQrColor(e.target.value)}
+                              placeholder="#000000"
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="qrBgColorUrl">Couleur du fond</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="qrBgColorUrl"
+                              type="color"
+                              value={qrBgColor}
+                              onChange={(e) => setQrBgColor(e.target.value)}
+                              className="w-20 h-10 cursor-pointer"
+                              disabled={transparentBg}
+                            />
+                            <Input
+                              type="text"
+                              value={qrBgColor}
+                              onChange={(e) => setQrBgColor(e.target.value)}
+                              placeholder="#FFFFFF"
+                              className="flex-1"
+                              disabled={transparentBg}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="transparentBgUrl"
+                          checked={transparentBg}
+                          onChange={(e) => setTransparentBg(e.target.checked)}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <Label htmlFor="transparentBgUrl" className="cursor-pointer">
+                          Fond transparent
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-6">
+                    {urlQrCodeUrl ? (
+                      <div className="bg-white p-6 rounded-lg shadow-lg border-2 border-primary/20">
+                        <img
+                          src={urlQrCodeUrl}
+                          alt="QR Code"
+                          className="w-full max-w-sm"
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-muted/30 p-12 rounded-lg border-2 border-dashed border-muted-foreground/30">
+                        <QrCode className="w-24 h-24 text-muted-foreground/50" />
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full">
+                      <Button
+                        onClick={handleGenerateUrlQR}
+                        className="flex-1 gap-2"
+                        size="lg"
+                      >
+                        <QrCode className="w-5 h-5" />
+                        Générer QR Code
+                      </Button>
+                      <Button
+                        onClick={handleDownloadUrlQR}
+                        variant="outline"
+                        className="flex-1 gap-2"
+                        size="lg"
+                        disabled={!urlQrCodeUrl}
+                      >
+                        <Download className="w-5 h-5" />
+                        Télécharger QR Code
+                      </Button>
+                    </div>
+                  </div>
+
+                  {urlInput && (
+                    <div className="mt-6">
+                      <Label>URL encodée</Label>
+                      <pre className="mt-2 p-4 bg-muted/50 rounded-lg text-xs overflow-x-auto border break-all">
+                        {urlInput}
+                      </pre>
+                    </div>
                   )}
                 </CardContent>
               </Card>

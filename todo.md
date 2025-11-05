@@ -49,3 +49,10 @@
 - [x] Adapter le script de build pour Vercel
 - [x] Corriger le fichier index.html pour supprimer les variables d'environnement inutiles
 - [x] Mettre à jour vercel.json avec la bonne configuration
+
+## Nouvelle fonctionnalité - QR Code depuis URL
+
+- [x] Ajouter un troisième onglet pour générer des QR codes depuis une URL
+- [x] Créer un champ de saisie pour l'URL
+- [x] Permettre la génération et le téléchargement du QR code depuis l'URL
+- [x] Réutiliser les options de personnalisation des couleurs
