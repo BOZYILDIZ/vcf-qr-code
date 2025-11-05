@@ -32,3 +32,7 @@
 
 - [x] Créer le fichier de configuration vercel.json
 - [x] Ajouter les instructions de déploiement dans le README
+
+## Bugs
+
+- [x] Corriger l'erreur de déploiement Vercel (outputDirectory incorrect)
